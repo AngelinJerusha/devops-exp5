@@ -1,0 +1,114 @@
+To learn how to create, view, update, and delete Kubernetes resources using the command-line tool kubectl.
+
+🧩 Prerequisites
+
+✅ Install kubectl
+
+choco install kubernetes-cli -y
+
+
+✅ Install Minikube
+
+choco install minikube -y
+
+
+✅ Verify installations
+
+kubectl version --client
+minikube version
+
+🚀 Step 1: Start a Local Cluster
+minikube start
+
+
+Wait a few minutes — it will create a single-node local Kubernetes cluster inside a VM or Docker.
+
+🧱 Step 2: Create a Deployment File
+
+Create a file k8s-deploy.yaml anywhere (e.g., C:\k8s-lab\k8s-deploy.yaml) with this content:
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: flask
+  template:
+    metadata:
+      labels:
+        app: flask
+    spec:
+      containers:
+      - name: flask
+        image: <dockerhub-username>/flask-lab:1.0
+        ports:
+        - containerPort: 5000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: flask-service
+spec:
+  selector:
+    app: flask
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 5000
+  type: NodePort
+
+
+⚠️ Replace <dockerhub-username> with your Docker Hub username.
+If you don’t have a Flask image, I can give you a 4-line Dockerfile to build and push one.
+
+⚙️ Step 3: Apply (Create) the Resources
+kubectl apply -f C:\k8s-lab\k8s-deploy.yaml
+
+
+Expected output:
+
+deployment.apps/flask-deploy created
+service/flask-service created
+
+🔍 Step 4: View Resources
+kubectl get pods
+kubectl get deployments
+kubectl get services
+
+📖 Step 5: Describe and View Logs
+kubectl describe pod <pod-name>
+kubectl logs <pod-name>
+
+
+You’ll see container details, events, and logs from your Flask app.
+
+📈 Step 6: Scale the Deployment
+kubectl scale deployment flask-deploy --replicas=3
+
+
+Then verify:
+
+kubectl get pods
+
+
+You should now see 3 running pods.
+
+🧹 Step 7: Delete Resources
+kubectl delete -f C:\k8s-lab\k8s-deploy.yaml
+
+🌐 (Optional) Step 8: Access the App
+minikube service flask-service
+
+
+This opens your browser to the running Flask app inside the Minikube cluster.
+
+✅ Observation
+
+You successfully created, viewed, scaled, and deleted Kubernetes resources using CLI commands.
+
+📄 Result
+
+Successfully deployed and managed Kubernetes resources (Pods, Deployment, and Service) using kubectl commands on a local Minikube cluster.
